@@ -1,4 +1,3 @@
-//http://www.appgamekit.com/bitesize-1.php
 // Project: UseYourHead 
 // Created: 2015-07-20
 
@@ -42,21 +41,57 @@ SetFolder("/media") //define a pasta atual
 	idJumpersArray[1] = sJumper02.sprite
 	idJumpersArray[2] = sJumper03.sprite
 	
+	//start criação da bola
+	//array com as posições x das bolas que caem
+	xPosBallArray as float[2] = [16.5, 49.5, 82.5]
+	
+	atualXPosBall = Random(0,2) //sorteia um número no array correspondente a posição x de um dos jumpers
+	
+	img = LoadImage("ball.png")	
+	ball = CreateSprite ( img )
+	SetSpriteSize(ball, jumperW, -1) 
+	SetSpriteOffset(ball,2,getSpriteHeight(ball)/2) 
+	SetSpritePositionByOffset(ball, xPosBallArray[atualXPosBall], 5) 
+	
+	tweenDownball = CreateTweenSprite( 2 )
+	SetTweenSpriteY( tweenDownBall, 5, 100, TweenSmooth1())
+	
+	//end criação da bola
+	
+	
+	// Create a simple y translation tween with bounce easing
+	// over 2 seconds. ( Time includes easing)!
+	tweenUpSprite001 = CreateTweenSprite( 0.6 )
+	SetTweenSpriteY( tweenUpSprite001, initialJumperY, maxJumpHight, TweenSmooth2())
+	tweenDownSprite001 = CreateTweenSprite( 0.6 )
+	SetTweenSpriteY( tweenDownSprite001, maxJumpHight, initialJumperY - 3, TweenSmooth1()) // por algum bug ele subindo 3 na escala Y, por isso o -3
+
+	startH# = GetSpriteY(idJumpersArray[1])
+	endH# = 0
 do
-	Print( ScreenFPS() )
+	Print( startH# )
+	Print( endH# )
+	
+	
+	PlayTweenSprite( tweenDownBall, ball, 0)
     
 	if ( GetPointerPressed ( ) = 1 )
 		//Evento de click
 		sprite = GetSpriteHit ( GetPointerX ( ), GetPointerY ( ) )
 		
-		//se um sprite fora clicado, ele busca pelo id do sprite clicado em uma lista de ids. 
+		//se um sprite for clicado, ele busca pelo id do sprite clicado em uma lista de ids. 
 		//Se o id estiver nessa lista ele chama o método jump(idSprite)
 		if(idJumpersArray.find(sprite) <> -1)
-			jump(sprite)
-		endif		
+			//jump(sprite)
+			PlayTweenSprite( tweenDownSprite001, sprite, 0)
+			PlayTweenSprite( tweenUpSprite001, sprite, 0)
+			
+		endif
 		
 	endif
 	
+	endH# = getspritey(idJumpersArray[1])
+	UpdateAllTweens( GetFrameTime())
     
 	
     Sync()

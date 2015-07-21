@@ -1,6 +1,6 @@
-global jumperW = 10 //largura do jumper
-global jumperH = -1 //altura do jumper
-#constant initialJumperY 95 
+#constant jumperW  10 //largura do jumper
+#constant jumperH  -1 //altura do jumper
+#constant initialJumperY 90
 #constant maxJumpHight 75
 //definição do jumper
 type sJumper
@@ -15,9 +15,11 @@ function startJumper(imgPath as string, x)
 	jumper.sprite = CreateSprite ( img )
 	jumper.ascending = 0
 	
+	SetSpriteSize(jumper.sprite, jumperW, jumperH) //define o tamanho do spriteSetSpriteSize(jumper.sprite, jumperW, jumperH) //define o tamanho do sprite
+	SetSpriteOffset(jumper.sprite,2,getSpriteHeight(jumper.sprite)/2) //muda o offset para o centro do sprite
 	SetSpritePositionByOffset(jumper.sprite, x, initialJumperY) // posiciona o sprite na posição (x,y) da tela. x,y em porcentagem
-	SetSpriteSize(jumper.sprite, jumperW, jumperH) //define o tamanho do sprite
-	setSpriteOffset(jumper.sprite,2,getSpriteHeight(jumper.sprite)/2) //muda o offset para o centro do sprite
+	
+	
 		
 endfunction jumper
 
