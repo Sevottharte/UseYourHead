@@ -1,7 +1,7 @@
 //http://www.appgamekit.com/bitesize-1.php
 // Project: HelloWorld 
 // Created: 2015-07-20
-
+#include "Jumper.agc"
 // set window properties
 SetWindowTitle( "HelloWorld" )
 SetWindowSize( 320, 480, 0 )
@@ -9,59 +9,48 @@ SetWindowSize( 320, 480, 0 )
 // set display properties
 //SetVirtualResolution( 1024, 768 ) // usa pixel como medida
 SetDisplayAspect ( 320.0/480.0 ) // usa porcentagem como medida (melhor para escalabilidade/mudança de resolução)
-SetOrientationAllowed( 0, 0, 1, 1 ) //suporta apenas portrait
+SetOrientationAllowed( 0, 0, 1, 1 ) //suporta apenas landscape
 
-SetFolder("/media")
-//pikachu = LoadImage("pikachu.png")
-
-
-	//background
+SetFolder("/media") //define a pasta atual
+	
+	//background e suas definições
 	iBG = LoadImage("bg.jpg") 
 	sBG = CreateSprite(iBG)
 	SetSpriteSize(sBG, 100, 100)
 	
-	iPikachu = LoadImage("pikachu.png") //carrega imagem		
-	sPikachu = CreateSprite ( iPikachu ) // cria um sprite e coloca a imagem pikachu nele
-	SetSpritePositionByOffset(sPikachu, 49.5, 50) // posiciona o sprite na posição (25%,75%) da tela
-	SetSpriteSize(sPikachu, 10, -1)
-	setSpriteOffset(sPikachu,2,getSpriteHeight(sPikachu)/2)
-	setSpritePhysicsOn(sPikachu,2)
+	sJumper01 as sJumper
+	sJumper02 as sJumper
+	sJumper03 as sJumper	
 	
-	iChar1 = LoadImage("charmander.png") //carrega imagem		
-	sChar1 = CreateSprite ( iChar1 ) // cria um sprite e coloca a imagem pikachu nele
-	SetSpritePositionByOffset(sChar1, 16.5, 50) // posiciona o sprite na posição (25%,75%) da tela
-	SetSpriteSize(sChar1, 10, -1)
-	setSpriteOffset(sChar1,2,getSpriteHeight(sChar1)/2)
-	setSpritePhysicsOn(sChar1,2)
+	//set das imagens dos jumpers
+	imgJumper01$ = "pikachu.png"
+	imgJumper02$ = "charmander.png"
+	imgJumper03$ = "charizard.png"
 	
-	ichar2 = LoadImage("charizard.png") //carrega imagem		
-	sChar2 = CreateSprite ( iChar2 ) // cria um sprite e coloca a imagem pikachu nele
-	SetSpritePositionByOffset(sChar2, 82.5, 50) // posiciona o sprite na posição (25%,75%) da tela
-	SetSpriteSize(sChar2, 10, -1)
-	setSpriteOffset(sChar2,2,getSpriteHeight(sPikachu)/2)
-	setSpritePhysicsOn(sChar2,2)
-
+	//Inicializa os jumpers
+	sJumper01 = startJumper( imgJumper01$ , 16.5)
+	sJumper02 = startJumper( imgJumper02$ , 49.5)
+	sJumper03 = startJumper( imgJumper03$ , 82.5)
+	
+	// adiciona os ids dos sprites em um array para compará-los no "evento" de click
+	idJumpersArray as integer[2]
+	idJumpersArray[0] = sJumper01.sprite
+	idJumpersArray[1] = sJumper02.sprite
+	idJumpersArray[2] = sJumper03.sprite
+	
 do
 	Print( ScreenFPS() )
-	
-	
-	
-	if ( GetPointerPressed ( ) = 1 )
-		
-		 sprite = GetSpriteHit ( GetPointerX ( ), GetPointerY ( ) )
     
-		if(sprite = sPikachu)
-			SetSpritePosition(sPikachu,GetSpriteX(sPikachu),80)
-		endif
-		if(sprite = sChar1)
-			SetSpritePosition(sChar1,GetSpriteX(sChar1),80)
-		endif
+	if ( GetPointerPressed ( ) = 1 )
+		//Evento de click
+		sprite = GetSpriteHit ( GetPointerX ( ), GetPointerY ( ) )
 		
-		if(sprite = sChar2)
-			SetSpritePosition(sChar2,GetSpriteX(sChar2),80)
-		endif
+		//se um sprite fora clicado, ele busca pelo id do sprite clicado em uma lista de ids. 
+		//Se o id estiver nessa lista ele chama o método jump(idSprite)
+		if(idJumpersArray.find(sprite) <> -1)
+			jump(sprite)
+		endif		
 		
-		//SetSpriteX(sBG,(GetSpriteX(sBG))-1)
 	endif
 	
     
