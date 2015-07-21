@@ -1,15 +1,19 @@
 //http://www.appgamekit.com/bitesize-1.php
-// Project: HelloWorld 
+// Project: UseYourHead 
 // Created: 2015-07-20
+
+//inclusão de arquivos externos
 #include "Jumper.agc"
+
+
 // set window properties
-SetWindowTitle( "HelloWorld" )
+SetWindowTitle( "Use Your Head" )
 SetWindowSize( 320, 480, 0 )
 
 // set display properties
 //SetVirtualResolution( 1024, 768 ) // usa pixel como medida
 SetDisplayAspect ( 320.0/480.0 ) // usa porcentagem como medida (melhor para escalabilidade/mudança de resolução)
-SetOrientationAllowed( 0, 0, 1, 1 ) //suporta apenas landscape
+SetOrientationAllowed( 1, 1, 0, 0 ) //suporta apenas landscape
 
 SetFolder("/media") //define a pasta atual
 	
