@@ -21,25 +21,25 @@ SetFolder("/media") //define a pasta atual
 	sBG = CreateSprite(iBG)
 	SetSpriteSize(sBG, 100, 100)
 	
-	sJumper01 as sJumper
-	sJumper02 as sJumper
-	sJumper03 as sJumper	
-	
 	//set das imagens dos jumpers
 	imgJumper01$ = "pikachu.png"
 	imgJumper02$ = "charmander.png"
 	imgJumper03$ = "charizard.png"
 	
 	//Inicializa os jumpers
+	sJumper01 as sJumper
+	sJumper02 as sJumper
+	sJumper03 as sJumper
+	
 	sJumper01 = startJumper( imgJumper01$ , 16.5)
 	sJumper02 = startJumper( imgJumper02$ , 49.5)
 	sJumper03 = startJumper( imgJumper03$ , 82.5)
 	
 	// adiciona os ids dos sprites em um array para compará-los no "evento" de click
-	idJumpersArray as integer[2]
-	idJumpersArray[0] = sJumper01.sprite
-	idJumpersArray[1] = sJumper02.sprite
-	idJumpersArray[2] = sJumper03.sprite
+	jumpersArray as sJumper[2] // só tá global por não poder passar uma array para uma função
+	jumpersArray[0] = sJumper01
+	jumpersArray[1] = sJumper02
+	jumpersArray[2] = sJumper03
 	
 	//start criação da bola
 	//array com as posições x das bolas que caem
@@ -49,7 +49,7 @@ SetFolder("/media") //define a pasta atual
 	
 	img = LoadImage("ball.png")	
 	ball = CreateSprite ( img )
-	SetSpriteSize(ball, jumperW, -1) 
+	SetSpriteSize(ball, JUMPER_W, -1) 
 	SetSpriteOffset(ball,2,getSpriteHeight(ball)/2) 
 	SetSpritePositionByOffset(ball, xPosBallArray[atualXPosBall], 5) 
 	
@@ -58,41 +58,54 @@ SetFolder("/media") //define a pasta atual
 	
 	//end criação da bola
 	
-	
-	// Create a simple y translation tween with bounce easing
-	// over 2 seconds. ( Time includes easing)!
-	tweenUpSprite001 = CreateTweenSprite( 0.6 )
-	SetTweenSpriteY( tweenUpSprite001, initialJumperY, maxJumpHight, TweenSmooth2())
-	tweenDownSprite001 = CreateTweenSprite( 0.6 )
-	SetTweenSpriteY( tweenDownSprite001, maxJumpHight, initialJumperY - 3, TweenSmooth1()) // por algum bug ele subindo 3 na escala Y, por isso o -3
+	click = 0 // flag para saber quando começar a animar os jumpers
 
-	startH# = GetSpriteY(idJumpersArray[1])
-	endH# = 0
+	startH# = GetSpriteY(jumpersArray[1].sprite) // pega a posição x de um dos jumpers e torna a posição x de um dos não-jumpers (bola)
+	endH# = 0 // seta a posição inicial da bola
+	
+	 // começa a contar o timer. Vai ser vir para calcular a diferença de tempo usada na função de deslocamento do sprite
+	lastFrame# = Timer ( )
+	
+//
+//
+//////	Main Looping /////
 do
-	Print( startH# )
-	Print( endH# )
-	
-	
-	PlayTweenSprite( tweenDownBall, ball, 0)
-    
-	if ( GetPointerPressed ( ) = 1 )
-		//Evento de click
+	//calcula o DT usado na função de movimento do sprite
+	thisFrame#  = Timer ( )
+    difference# = thisFrame# - lastFrame#
+    lastFrame#  = thisFrame#
+	    PRINT ( TIMER() )
+
+	if ( GetPointerPressed ( ) = 1 ) //Evento de click/toque
+		
+		//verifica se houve um click em um sprite e passa o id do sprite clicado				
 		sprite = GetSpriteHit ( GetPointerX ( ), GetPointerY ( ) )
 		
-		//se um sprite for clicado, ele busca pelo id do sprite clicado em uma lista de ids. 
-		//Se o id estiver nessa lista ele chama o método jump(idSprite)
-		if(idJumpersArray.find(sprite) <> -1)
-			//jump(sprite)
-			PlayTweenSprite( tweenDownSprite001, sprite, 0)
-			PlayTweenSprite( tweenUpSprite001, sprite, 0)
-			
+		if(isJumper(jumpersArray, sprite)) //verifica se é um jumper. Evita de clicar em uma não-jumper e acontecer de interagir com ele.			
+			click = 1 // uma flag para os jumpers começarem a pular.	
 		endif
 		
 	endif
 	
-	endH# = getspritey(idJumpersArray[1])
-	UpdateAllTweens( GetFrameTime())
-    
+	//como estamos em um looping infinito, coloquei essa flag para saber quando começar a mover os jumper.
+	if (click = 1)
+		
+		totalJumpers = jumpersArray.length //tamanho do array de jumpers
+		//percorro o array para saber se tem algum jumper que é para movimentar para cima ou para baixo. 
+		//Isso em cada interação do looping principal
+		for t = 0 to totalJumpers
+			if(jumpersArray[t].behavior = ASCENDING)
+				up(jumpersArray[t], difference#)
+			endif
+			if(jumpersArray[t].behavior = DESCENDING)
+				
+				down(jumpersArray[t], difference#)
+			endif
+		next t
+	endif
+	
+	
+	endH# = GetSpriteY(jumpersArray[1].sprite)
 	
     Sync()
 loop
